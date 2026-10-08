@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magnum - Опрос по автоматизации</title>
+    <title>Magnum - Опрос по роботизации</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -248,15 +248,15 @@
 <body>
     <div class="survey-container">
         <div class="header">
-            <h1>Опрос по автоматизации</h1>
-            <p>Помогите нам найти задачи, которые можно передать роботу</p>
+            <h1>Опрос по роботизации</h1>
+            <p>Помогите нам найти задачи, которые можно роботизировать</p>
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
         <!-- Шаг 0: Вступление + выбор типа -->
         <div class="step active" id="step-0">
             <h2>Где вы работаете?</h2>
-            <p class="hint">Выберите ваше подразделение, чтобы мы задали правильные вопросы.</p>
+            <p class="hint">Выберите ваше подразделение.</p>
             <div class="options">
                 <button class="option-btn" onclick="selectType('store')">
                     <span class="icon">🏪</span> Магазин (филиал)
@@ -525,7 +525,7 @@
         function finishSurvey() {
             const taskWord = taskNumber === 1 ? 'задачу' : (taskNumber < 5 ? 'задачи' : 'задач');
             document.getElementById('finishText').textContent =
-                'Вы описали ' + taskNumber + ' ' + taskWord + '. Мы используем эту информацию для выбора процессов, которые можно автоматизировать.';
+                'Вы описали ' + taskNumber + ' ' + taskWord + '. Мы используем эту информацию для выбора процессов, которые можно роботизировать.';
             showStep('finish');
         }
     </script>
