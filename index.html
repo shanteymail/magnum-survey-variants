@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnum - Опрос по автоматизации</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 16px;
+        }
+
+        .survey-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #E31E24 0%, #C41E3A 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #eee;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #E31E24;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .step {
+            display: none;
+            padding: 30px 25px;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .step h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .step p.hint {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .example {
+            background: #f9f9f9;
+            border-left: 3px solid #E31E24;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 15px;
+            color: #333;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            border-color: #E31E24;
+            background: #fff5f5;
+        }
+
+        .option-btn.selected {
+            border-color: #E31E24;
+            background: #fff0f0;
+            font-weight: 500;
+        }
+
+        .option-btn .icon {
+            font-size: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #E31E24;
+        }
+
+        .voice-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #E31E24;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #C41E3A;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .finish-screen {
+            text-align: center;
+            padding: 50px 25px;
+        }
+
+        .finish-screen .checkmark {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .finish-screen h2 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .finish-screen p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .task-counter {
+            display: inline-block;
+            background: #E31E24;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px 8px; }
+            .header { padding: 20px 16px; }
+            .header h1 { font-size: 18px; }
+            .step { padding: 20px 16px; }
+            .btn { padding: 12px 20px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="header">
+            <h1>Опрос по автоматизации</h1>
+            <p>Помогите нам найти задачи, которые можно передать роботу</p>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+        <!-- Шаг 0: Вступление + выбор типа -->
+        <div class="step active" id="step-0">
+            <h2>Где вы работаете?</h2>
+            <p class="hint">Выберите ваше подразделение, чтобы мы задали правильные вопросы.</p>
+            <div class="options">
+                <button class="option-btn" onclick="selectType('store')">
+                    <span class="icon">🏪</span> Магазин (филиал)
+                </button>
+                <button class="option-btn" onclick="selectType('office')">
+                    <span class="icon">🏢</span> Офис
+                </button>
+                <button class="option-btn" onclick="selectType('warehouse')">
+                    <span class="icon">📦</span> Склад
+                </button>
+            </div>
+        </div>
+
+        <!-- Шаг 1: Описание задачи -->
+        <div class="step" id="step-1">
+            <div class="task-counter" id="taskCounter">Задача 1</div>
+            <div class="step-label">Вопрос 1 из 5</div>
+            <h2>Какую повторяющуюся работу вы хотели бы передать роботу?</h2>
+            <p class="hint">Опишите своими словами или отправьте голосовое сообщение.</p>
+            <div class="example" id="example1"></div>
+            <textarea id="taskDescription" placeholder="Опишите задачу..."></textarea>
+            <div class="voice-hint">🎤 Можно отправить голосовое сообщение в Telegram-боте</div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Назад</button>
+                <button class="btn btn-primary" onclick="goNext(1)">Далее</button>
+            </div>
+        </div>
+
+        <!-- Шаг 2: Частота -->
+        <div class="step" id="step-2">
+            <div class="task-counter" id="taskCounter2">Задача 1</div>
+            <div class="step-label">Вопрос 2 из 5</div>
+            <h2>Как часто вы выполняете эту работу?</h2>
+            <div class="options" id="q2options">
+                <button class="option-btn" onclick="selectOption(2, this)">Несколько раз в день</button>
+                <button class="option-btn" onclick="selectOption(2, this)">Каждый день</button>
+                <button class="option-btn" onclick="selectOption(2, this)">Несколько раз в неделю</button>
+                <button class="option-btn" onclick="selectOption(2, this)">Раз в неделю</button>
+                <button class="option-btn" onclick="selectOption(2, this)">Реже</button>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Назад</button>
+                <button class="btn btn-primary" id="btn2" disabled onclick="goNext(2)">Далее</button>
+            </div>
+        </div>
+
+        <!-- Шаг 3: Время -->
+        <div class="step" id="step-3">
+            <div class="task-counter" id="taskCounter3">Задача 1</div>
+            <div class="step-label">Вопрос 3 из 5</div>
+            <h2>Сколько времени уходит на эту работу за один раз?</h2>
+            <div class="options" id="q3options">
+                <button class="option-btn" onclick="selectOption(3, this)">До 15 минут</button>
+                <button class="option-btn" onclick="selectOption(3, this)">15-30 минут</button>
+                <button class="option-btn" onclick="selectOption(3, this)">30-60 минут</button>
+                <button class="option-btn" onclick="selectOption(3, this)">1-2 часа</button>
+                <button class="option-btn" onclick="selectOption(3, this)">Более 2 часов</button>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Назад</button>
+                <button class="btn btn-primary" id="btn3" disabled onclick="goNext(3)">Далее</button>
+            </div>
+        </div>
+
+        <!-- Шаг 4: Повторяемость -->
+        <div class="step" id="step-4">
+            <div class="task-counter" id="taskCounter4">Задача 1</div>
+            <div class="step-label">Вопрос 4 из 5</div>
+            <h2>Каждый раз вы выполняете эту работу примерно одинаково, по понятным правилам?</h2>
+            <div class="options" id="q4options">
+                <button class="option-btn" onclick="selectOption(4, this)">Да</button>
+                <button class="option-btn" onclick="selectOption(4, this)">Частично</button>
+                <button class="option-btn" onclick="selectOption(4, this)">Нет</button>
+                <button class="option-btn" onclick="selectOption(4, this)">Не знаю</button>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Назад</button>
+                <button class="btn btn-primary" id="btn4" disabled onclick="goNext(4)">Далее</button>
+            </div>
+        </div>
+
+        <!-- Шаг 5: Масштаб (разный текст) -->
+        <div class="step" id="step-5">
+            <div class="task-counter" id="taskCounter5">Задача 1</div>
+            <div class="step-label">Вопрос 5 из 5</div>
+            <h2 id="q5title"></h2>
+            <div class="options" id="q5options"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Назад</button>
+                <button class="btn btn-primary" id="btn5" disabled onclick="goNext(5)">Далее</button>
+            </div>
+        </div>
+
+        <!-- Шаг 6: Ещё задача? -->
+        <div class="step" id="step-6">
+            <h2>Есть ещё одна рабочая задача, которую хотелось бы упростить?</h2>
+            <div class="options">
+                <button class="option-btn" onclick="addAnotherTask()">
+                    <span class="icon">➕</span> Да, рассказать ещё об одной
+                </button>
+                <button class="option-btn" onclick="finishSurvey()">
+                    <span class="icon">✅</span> Нет, закончить
+                </button>
+            </div>
+        </div>
+
+        <!-- Финиш -->
+        <div class="step" id="step-finish">
+            <div class="finish-screen">
+                <div class="checkmark">✅</div>
+                <h2>Спасибо за ответы!</h2>
+                <p id="finishText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let selectedType = '';
+        let taskNumber = 1;
+        let answers = {};
+        let allTasks = [];
+
+        const examples = {
+            store: 'Например: «Каждое утро проверяю расхождения цен в GOLD, затем вручную составляю список и отправляю руководителю.»',
+            office: 'Например: «Каждый день выгружаю данные из 1С, сверяю с Excel и отправляю результаты по почте.»',
+            warehouse: 'Например: «Каждое утро выгружаю остатки, сверяю расхождения в таблице и формирую отчёт.»'
+        };
+
+        const q5data = {
+            store: {
+                title: 'Эту работу выполняют и в других магазинах?',
+                options: [
+                    'Да, практически во всех магазинах',
+                    'Да, в некоторых магазинах',
+                    'Нет, только у нас',
+                    'Не знаю'
+                ]
+            },
+            office: {
+                title: 'Эту работу выполняют и другие сотрудники или подразделения?',
+                options: [
+                    'Да, многие сотрудники',
+                    'Да, несколько сотрудников',
+                    'Нет, только я',
+                    'Не знаю'
+                ]
+            },
+            warehouse: {
+                title: 'Эту работу выполняют и на других складах?',
+                options: [
+                    'Да, на большинстве складов',
+                    'Да, на некоторых складах',
+                    'Нет, только на нашем',
+                    'Не знаю'
+                ]
+            }
+        };
+
+        function selectType(type) {
+            selectedType = type;
+
+            // Настроить пример для Q1
+            document.getElementById('example1').textContent = examples[type];
+
+            // Настроить Q5
+            const q5 = q5data[type];
+            document.getElementById('q5title').textContent = q5.title;
+            const q5opts = document.getElementById('q5options');
+            q5opts.innerHTML = '';
+            q5.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = function() { selectOption(5, this); };
+                q5opts.appendChild(btn);
+            });
+
+            // Подсветить выбранную кнопку
+            document.querySelectorAll('#step-0 .option-btn').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            // Перейти на шаг 1
+            setTimeout(() => showStep(1), 300);
+        }
+
+        function selectOption(step, btn) {
+            const container = btn.parentElement;
+            container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            answers['q' + step] = btn.textContent;
+            document.getElementById('btn' + step).disabled = false;
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            const stepEl = document.getElementById(step === 'finish' ? 'step-finish' : 'step-' + step);
+            if (stepEl) stepEl.classList.add('active');
+            currentStep = step;
+
+            // Прогресс
+            let pct = 0;
+            if (step === 0) pct = 0;
+            else if (step === 'finish' || step === 6) pct = 100;
+            else pct = (step / 6) * 100;
+            document.getElementById('progress').style.width = pct + '%';
+
+            window.scrollTo(0, 0);
+        }
+
+        function goNext(step) {
+            if (step === 1) {
+                const desc = document.getElementById('taskDescription').value.trim();
+                if (!desc) {
+                    document.getElementById('taskDescription').style.borderColor = '#E31E24';
+                    document.getElementById('taskDescription').placeholder = 'Пожалуйста, опишите задачу...';
+                    return;
+                }
+                answers.description = desc;
+            }
+            if (step === 5) {
+                // Сохранить задачу
+                allTasks.push({
+                    type: selectedType,
+                    taskNumber: taskNumber,
+                    description: answers.description,
+                    frequency: answers.q2,
+                    duration: answers.q3,
+                    repeatable: answers.q4,
+                    scale: answers.q5
+                });
+                showStep(6);
+                return;
+            }
+            showStep(step + 1);
+        }
+
+        function goBack() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function addAnotherTask() {
+            taskNumber++;
+            answers = {};
+
+            // Обновить счётчики
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById('taskCounter' + (i === 1 ? '' : i));
+                if (el) el.textContent = 'Задача ' + taskNumber;
+            }
+
+            // Очистить поля
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskDescription').style.borderColor = '#eee';
+            for (let i = 2; i <= 5; i++) {
+                document.querySelectorAll('#q' + i + 'options .option-btn').forEach(b => b.classList.remove('selected'));
+                const btn = document.getElementById('btn' + i);
+                if (btn) btn.disabled = true;
+            }
+
+            showStep(1);
+        }
+
+        function finishSurvey() {
+            const taskWord = taskNumber === 1 ? 'задачу' : (taskNumber < 5 ? 'задачи' : 'задач');
+            document.getElementById('finishText').textContent =
+                'Вы описали ' + taskNumber + ' ' + taskWord + '. Мы используем эту информацию для выбора процессов, которые можно автоматизировать.';
+            showStep('finish');
+        }
+    </script>
+</body>
+</html>
