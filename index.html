@@ -274,10 +274,21 @@
         <div class="step" id="step-1">
             <div class="task-counter" id="taskCounter">Задача 1</div>
             <div class="step-label">Вопрос 1 из 5</div>
-            <h2>Какую повторяющуюся работу в системах и/или с документами (в т.ч. файлы, отчеты и т.д.) вы делаете в рамках своей должности?</h2>
-            <p class="hint">Кратко опишите свои действия, указав название систем и документов.</p>
-            <div class="example" id="example1"></div>
+            <h2>Какую повторяющуюся работу с компьютером, программами, документами или отчётами вы выполняете в рамках своих должностных обязанностей?</h2>
+            <p class="hint">Кратко опишите, что именно вы делаете, и по возможности укажите названия программ, систем или документов.</p>
+            <div class="example" id="example1">Например:
+                <ul style="margin: 8px 0 0 18px;">
+                    <li>Переношу данные из одной программы в другую.</li>
+                    <li>Ежедневно формирую отчёт в Excel.</li>
+                    <li>Проверяю и сверяю данные в 1С.</li>
+                    <li>Вручную обрабатываю накладные и другие документы.</li>
+                    <li>Проверяю остатки товаров в системе и отправляю отчёт.</li>
+                    <li>Вношу информацию на сайты или во внутренние программы.</li>
+                </ul>
+            </div>
             <textarea id="taskDescription" placeholder="Опишите задачу..."></textarea>
+            <p class="hint" style="margin: -8px 0 16px;">Если вы не выполняете такую работу, выберите «Не выполняю».</p>
+            <button class="option-btn" style="margin-bottom: 16px;" onclick="noWork()">Не выполняю</button>
             <div class="nav-buttons">
                 <button class="btn btn-secondary" onclick="goBack()">Назад</button>
                 <button class="btn btn-primary" onclick="goNext(1)">Далее</button>
@@ -418,9 +429,6 @@
         function selectType(type) {
             selectedType = type;
 
-            // Настроить пример для Q1
-            document.getElementById('example1').textContent = examples[type];
-
             // Настроить Q5
             const q5 = q5data[type];
             document.getElementById('q5title').textContent = q5.title;
@@ -519,6 +527,16 @@
             }
 
             showStep(1);
+        }
+
+        function noWork() {
+            if (allTasks.length === 0) {
+                document.getElementById('finishText').textContent = 'Спасибо за ответ! Ваше мнение учтено.';
+                showStep('finish');
+            } else {
+                taskNumber = allTasks.length;
+                finishSurvey();
+            }
         }
 
         function finishSurvey() {
